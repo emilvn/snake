@@ -14,20 +14,22 @@ export function init(grid) {
 
 export function displayGrid(grid) {
   const cells = document.querySelectorAll("#grid .cell");
+  // clear all cells
   for (const cell of cells) {
     cell.classList.remove("snake", "food");
   }
+  // set snake and food cells
   for (let i = 0; i < grid.rowNum; i++) {
     for (let j = 0; j < grid.colNum; j++) {
       const cell = document.querySelector(
         `.cell[data-row="${i}"][data-col="${j}"]`
       );
-
-      if (grid.grid[i][j] === 0) {
+      const cellValue = grid.get(i, j);
+      if (cellValue === 0) {
         cell.classList.remove("snake", "food");
-      } else if (grid.grid[i][j] === 1) {
+      } else if (cellValue === 1) {
         cell.classList.add("snake");
-      } else if (grid.grid[i][j] === 2) {
+      } else if (cellValue === 2) {
         cell.classList.add("food");
       }
     }

@@ -1,28 +1,30 @@
-import { Grid } from "./grid.js";
 import { Queue } from "./queue.js";
 import * as view from "./view.js";
+import * as model from "./model.js";
 
 window.addEventListener("load", init);
 window.addEventListener("keydown", handleKeydown);
 
-// Adjustables
+// adjustables
 const ROWS = 30;
-const COLS = 30;
+const COLS = 20;
 const TICK_RATE = 100;
 
-// state variables
-const grid = new Grid(ROWS, COLS);
+// input buffer
 const inputBuffer = new Queue();
-const snake = new Queue();
-snake.enqueue({ row: Math.floor(ROWS / 2), col: Math.floor(COLS / 2) });
-let food = generateFood();
 let direction = "left";
-let nextDirection = direction;
+inputBuffer.enqueue(direction);
+
+// game state
+const board = model.newBoard(ROWS, COLS);
+let snake = model.newSnake(board);
+
+let food = model.generateFood(board);
 let gamerunning = false;
 let firstRun = true;
 
 function init() {
-  view.init(grid);
+  view.init(board);
   tick();
 }
 
@@ -37,16 +39,16 @@ function tick() {
   // process one direction pr tick
   const bufferedDirection = inputBuffer.dequeue();
   if (bufferedDirection) {
-    nextDirection = bufferedDirection;
+    direction = bufferedDirection;
   }
 
-  moveSnake();
-  if (checkCollision()) {
+  model.moveSnake(board, snake, direction, food);
+  if (model.checkCollision(snake)) {
     gamerunning = false;
     restart();
   }
-  if (checkFood()) {
-    food = generateFood();
+  if (model.checkFood(food, snake)) {
+    food = model.generateFood(board);
   }
   render();
 }
@@ -87,88 +89,18 @@ function handleKeydown(event) {
   }
 }
 
-function moveSnake() {
-  direction = nextDirection;
-  const head = snake.tail?.data;
-  let newHead;
-  switch (direction) {
-    case "up":
-      newHead = { row: head.row - 1, col: head.col };
-      break;
-    case "down":
-      newHead = { row: head.row + 1, col: head.col };
-      break;
-    case "left":
-      newHead = { row: head.row, col: head.col - 1 };
-      break;
-    case "right":
-      newHead = { row: head.row, col: head.col + 1 };
-      break;
-  }
-
-  // wrap around edges
-  if (newHead.row < 0) {
-    newHead.row = ROWS - 1;
-  } else if (newHead.row >= ROWS) {
-    newHead.row = 0;
-  }
-  if (newHead.col < 0) {
-    newHead.col = COLS - 1;
-  } else if (newHead.col >= COLS) {
-    newHead.col = 0;
-  }
-
-  snake.enqueue(newHead);
-  // if snake did not eat food, remove last segment (queue head)
-  if (!checkFood()) {
-    snake.dequeue();
-  }
-}
-
-// checks if snake collided with itself
-function checkCollision() {
-  const head = snake.tail?.data;
-  // loop without looking at snake head (queue tail)
-  for (let part = snake.head; part !== snake.tail; part = part.next) {
-    if (part.data.row === head.row && part.data.col === head.col) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// check if snakes head (queue tail) is on food
-function checkFood() {
-  const head = snake.tail?.data;
-  return head.row === food.row && head.col === food.col;
-}
-
-// generate food at random location
-function generateFood() {
-  let newFood;
-  newFood = {
-    row: Math.floor(Math.random() * ROWS),
-    col: Math.floor(Math.random() * COLS),
-  };
-  return newFood;
-}
-
 // refresh grid rendering
 function render() {
-  grid.clear();
-  for (let part = snake.head; part !== null; part = part.next) {
-    grid.set(part.data.row, part.data.col, 1);
-  }
-  grid.set(food.row, food.col, 2);
-  view.displayGrid(grid);
+  model.clearBoard(board);
+  model.putSnakeOnBoard(board, snake);
+  model.putFoodOnBoard(board, food);
+  view.displayGrid(board);
 }
 
 // restart game
 function restart() {
-  snake.clear();
-  snake.enqueue({ row: Math.floor(ROWS / 2), col: Math.floor(COLS / 2) });
-  food = generateFood();
+  snake = model.newSnake(board);
+  food = model.generateFood(board);
   direction = "left";
-  nextDirection = direction;
   render();
 }

@@ -46,6 +46,13 @@ export class Queue {
   }
 
   /**
+   * Nice!
+   */
+  getTail() {
+    return this.tail?.data;
+  }
+
+  /**
    * Adds data to end of queue
    * @param {*} data
    */
