@@ -21,6 +21,24 @@ export class Queue {
   }
 
   /**
+   * Returns an iterator that allows you to iterate over the queue
+   * @returns {Iterator} iterator
+   */
+  [Symbol.iterator]() {
+    let current = this.head;
+    return {
+      next() {
+        if (!current) {
+          return { done: true };
+        }
+        const data = current.data;
+        current = current.next;
+        return { value: data, done: false };
+      },
+    };
+  }
+
+  /**
    * Nice!
    */
   getHead() {
@@ -66,7 +84,7 @@ export class Queue {
    * @param {Node} node
    */
   enqueueNode(node) {
-    if (this.tail === this.head) {
+    if (!this.head) {
       this.head = node;
       this.tail = node;
       this._size++;
@@ -75,6 +93,22 @@ export class Queue {
     this._size++;
     this.tail.next = node;
     this.tail = node;
+  }
+
+  /**
+   * Returns true if any element in the queue makes the callback function return true
+   * @param {(any) => boolean} cb
+   * @returns boolean if any element in the queue makes the callback function return
+   */
+  some(cb) {
+    let node = this.head;
+    while (node) {
+      if (cb(node.data)) {
+        return true;
+      }
+      node = node.next;
+    }
+    return false;
   }
 
   /**
@@ -103,8 +137,6 @@ export class Queue {
       }
       node = node.next;
     }
-    console.log("Head: " + this.head?.data);
-    console.log("Tail: " + this.tail?.data);
     console.log("Queue: " + output);
   }
 }

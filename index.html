@@ -4,9 +4,55 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Snake</title>
+    <style>
+      :root {
+        --row-num: 30;
+        --col-num: 30;
+      }
+      body {
+        font-family: monospace;
+        background-color: #515151;
+      }
+      #grid {
+        position: relative;
+        background-color: #717171;
+        display: grid;
+        width: fit-content;
+        grid-template-columns: repeat(var(--col-num), 24px);
+        grid-template-rows: repeat(var(--row-num), 24px);
+      }
+      .cell {
+        width: 24px;
+        height: 24px;
+        border: 1px solid #616161;
+      }
+      .cell.snake {
+        background-color: #cafebabe;
+      }
+      .cell.food {
+        background-color: #f00;
+      }
+      .game-over {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f00;
+        color: #fff;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 24px;
+      }
+    </style>
   </head>
   <body>
     <h1>Snake</h1>
-    <div id="game"></div>
+    <div id="grid">
+      <div class="game-over" style="display: none">
+        <div style="text-align: center">Game Over</div>
+        <div style="font-size: medium">Press Enter to restart</div>
+      </div>
+    </div>
   </body>
+  <script src="controller.js" type="module"></script>
 </html>
