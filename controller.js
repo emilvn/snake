@@ -54,18 +54,23 @@ function tick() {
 // add direction to input buffer
 function handleKeydown(event) {
   switch (event.key) {
+    case "w":
     case "ArrowUp":
       if (direction !== "down") inputBuffer.enqueue("up");
       break;
+    case "s":
     case "ArrowDown":
       if (direction !== "up") inputBuffer.enqueue("down");
       break;
+    case "a":
     case "ArrowLeft":
       if (direction !== "right") inputBuffer.enqueue("left");
       break;
+    case "d":
     case "ArrowRight":
       if (direction !== "left") inputBuffer.enqueue("right");
       break;
+    case " ":
     case "Enter":
       if (!gamerunning) {
         gamerunning = true;
@@ -101,7 +106,7 @@ function moveSnake() {
       break;
   }
 
-  // Wrap around the edges
+  // wrap around edges
   if (newHead.row < 0) {
     newHead.row = ROWS - 1;
   } else if (newHead.row >= ROWS) {
@@ -124,12 +129,8 @@ function moveSnake() {
 function checkCollision() {
   const head = snake.tail?.data;
   // loop without looking at snake head (queue tail)
-  for (
-    let segment = snake.head;
-    segment !== snake.tail;
-    segment = segment.next
-  ) {
-    if (segment.data.row === head.row && segment.data.col === head.col) {
+  for (let part = snake.head; part !== snake.tail; part = part.next) {
+    if (part.data.row === head.row && part.data.col === head.col) {
       return true;
     }
   }
@@ -155,8 +156,8 @@ function generateFood() {
 // refresh grid rendering
 function render() {
   grid.clear();
-  for (let segment = snake.head; segment !== null; segment = segment.next) {
-    grid.set(segment.data.row, segment.data.col, 1);
+  for (let part = snake.head; part !== null; part = part.next) {
+    grid.set(part.data.row, part.data.col, 1);
   }
   grid.set(food.row, food.col, 2);
   view.displayGrid(grid);
