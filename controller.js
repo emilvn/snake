@@ -19,6 +19,7 @@ let food = generateFood();
 let direction = "left";
 let nextDirection = direction;
 let gamerunning = false;
+let firstRun = true;
 
 function init() {
   view.init(grid);
@@ -27,8 +28,10 @@ function init() {
 
 function tick() {
   setTimeout(tick, TICK_RATE);
-  if (!gamerunning) {
+  if (!gamerunning && !firstRun) {
     view.displayGameOver();
+    return;
+  } else if (!gamerunning) {
     return;
   }
   // process one direction pr tick
@@ -66,6 +69,10 @@ function handleKeydown(event) {
     case "Enter":
       if (!gamerunning) {
         gamerunning = true;
+        if (firstRun) {
+          firstRun = false;
+          view.removeFirstRun();
+        }
         view.removeGameOver();
         restart();
       }
@@ -162,6 +169,5 @@ function restart() {
   food = generateFood();
   direction = "left";
   nextDirection = direction;
-  gameOver = false;
   render();
 }

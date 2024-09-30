@@ -37,9 +37,27 @@ export function displayGrid(grid) {
 export function displayGameOver() {
   const gameOver = document.querySelector(".game-over");
   gameOver.style.display = "block";
+  displayBackdrop();
 }
 
 export function removeGameOver() {
   const gameOver = document.querySelector(".game-over");
   gameOver.style.display = "none";
+  removeBackdrop();
+}
+
+export function removeFirstRun() {
+  const firstRun = document.querySelector(".game-begin");
+  firstRun.style.display = "none";
+  removeBackdrop();
+}
+
+export function removeBackdrop() {
+  const backdrop = document.querySelector(".overlay-backdrop");
+  backdrop.style.display = "none";
+}
+
+export function displayBackdrop() {
+  const backdrop = document.querySelector(".overlay-backdrop");
+  backdrop.style.display = "block";
 }
